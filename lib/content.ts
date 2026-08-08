@@ -22,24 +22,24 @@ export const routeMap: Record<Locale, Record<PageKey, string>> = {
 
 export const marketCategories = {
   en: [
-    { name: "Fresh fish", note: "A daily selection chosen for texture, colour and condition.", image: "/seafood/market-ice.jpg" },
-    { name: "Salmon & tuna", note: "Atlantic salmon and yellowfin tuna, including sushi-grade cuts when available.", image: "/seafood/salmon-ice.jpg" },
-    { name: "Lobster", note: "Live and cooked lobster, prepared to order when available.", image: "/seafood/platter.jpg" },
-    { name: "Oysters", note: "Whole and freshly shucked oysters for the counter or your table.", image: "/seafood/oysters.jpg" },
-    { name: "Shellfish", note: "Scallops, tiger shrimp and a changing shellfish selection.", image: "/seafood/platter.jpg" },
-    { name: "Chef-prepared", note: "Soups, bisques, tartares, paella and signature dishes by Chef Paul.", image: "/seafood/paella.jpg" },
-    { name: "Fine foods", note: "Caviar, smoked salmon, oils, vinegars, spices and seacuterie.", image: "/seafood/caviar.jpg" },
-    { name: "Produce & essentials", note: "Fresh produce, pasta, noodles and selected dairy essentials.", image: "/seafood/fishmonger.jpg" },
+    { name: "Fresh fish", note: "A daily selection chosen for texture, colour and condition.", image: "/sherbrooke/market-counter.webp" },
+    { name: "Salmon & tuna", note: "Atlantic salmon and yellowfin tuna, including sushi-grade cuts when available.", image: "/sherbrooke/salmon.webp" },
+    { name: "Lobster", note: "Live and cooked lobster, prepared to order when available.", image: "/sherbrooke/lobsters.webp" },
+    { name: "Oysters", note: "Whole and freshly shucked oysters for the counter or your table.", image: "/sherbrooke/oysters.webp" },
+    { name: "Shellfish", note: "Scallops, tiger shrimp and a changing shellfish selection.", image: "/sherbrooke/shellfish-platter.webp" },
+    { name: "Chef-prepared", note: "Soups, bisques, tartares, paella and signature dishes by Chef Paul.", image: "/sherbrooke/seafood-feast.webp" },
+    { name: "Fine foods", note: "Caviar, smoked salmon, oils, vinegars, spices and seacuterie.", image: "/sherbrooke/caviar-selection.webp" },
+    { name: "Produce & essentials", note: "Fresh produce, pasta, noodles and selected dairy essentials.", image: "/sherbrooke/fine-foods.webp" },
   ],
   fr: [
-    { name: "Poissons frais", note: "Une sélection quotidienne choisie pour sa texture, sa couleur et sa fraîcheur.", image: "/seafood/market-ice.jpg" },
-    { name: "Saumon et thon", note: "Saumon de l’Atlantique et thon à nageoires jaunes, qualité sushi selon les arrivages.", image: "/seafood/salmon-ice.jpg" },
-    { name: "Homard", note: "Homard vivant ou cuit, préparé sur demande selon la disponibilité.", image: "/seafood/platter.jpg" },
-    { name: "Huîtres", note: "Huîtres entières ou fraîchement ouvertes, pour le comptoir ou votre table.", image: "/seafood/oysters.jpg" },
-    { name: "Fruits de mer", note: "Pétoncles, crevettes tigrées et sélection variable de coquillages.", image: "/seafood/platter.jpg" },
-    { name: "Prêt-à-manger", note: "Soupes, bisques, tartares, paella et plats signatures du chef Paul.", image: "/seafood/paella.jpg" },
-    { name: "Épicerie fine", note: "Caviar, saumon fumé, huiles, vinaigres, épices et charcuteries de la mer.", image: "/seafood/caviar.jpg" },
-    { name: "Produits et essentiels", note: "Produits frais, pâtes, nouilles et produits laitiers sélectionnés.", image: "/seafood/fishmonger.jpg" },
+    { name: "Poissons frais", note: "Une sélection quotidienne choisie pour sa texture, sa couleur et sa fraîcheur.", image: "/sherbrooke/market-counter.webp" },
+    { name: "Saumon et thon", note: "Saumon de l’Atlantique et thon à nageoires jaunes, qualité sushi selon les arrivages.", image: "/sherbrooke/salmon.webp" },
+    { name: "Homard", note: "Homard vivant ou cuit, préparé sur demande selon la disponibilité.", image: "/sherbrooke/lobsters.webp" },
+    { name: "Huîtres", note: "Huîtres entières ou fraîchement ouvertes, pour le comptoir ou votre table.", image: "/sherbrooke/oysters.webp" },
+    { name: "Fruits de mer", note: "Pétoncles, crevettes tigrées et sélection variable de coquillages.", image: "/sherbrooke/shellfish-platter.webp" },
+    { name: "Prêt-à-manger", note: "Soupes, bisques, tartares, paella et plats signatures du chef Paul.", image: "/sherbrooke/seafood-feast.webp" },
+    { name: "Épicerie fine", note: "Caviar, saumon fumé, huiles, vinaigres, épices et charcuteries de la mer.", image: "/sherbrooke/caviar-selection.webp" },
+    { name: "Produits et essentiels", note: "Produits frais, pâtes, nouilles et produits laitiers sélectionnés.", image: "/sherbrooke/fine-foods.webp" },
   ],
 };
 
@@ -90,5 +90,5 @@ export const copy = {
 };
 
 export const photographyCredits = [
-  "Georg Eiermann", "Jason Leung", "Jesse", "MChe Lee", "Annie Hatuanh", "Kevin Torres", "Vitalii Kyktov", "Madeline Liu",
+  "Poissonnerie Sherbrooke archive",
 ];

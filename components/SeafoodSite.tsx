@@ -5,28 +5,41 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { business, copy, Locale, marketCategories, menuGroups, PageKey, photographyCredits, routeMap } from "@/lib/content";
 
 const pageHero = {
-  market: { image: "/seafood/salmon-ice.jpg", en: ["The market", "Today’s sea, selected by hand."], fr: ["La poissonnerie", "La mer du jour, choisie à la main."] },
-  menu: { image: "/seafood/lobster-roll.jpg", en: ["Chef’s menu", "Restaurant craft, ready for home."], fr: ["Menu du chef", "Le savoir-faire du restaurant, à emporter."] },
-  catering: { image: "/seafood/platter.jpg", en: ["Catering", "A table built around the sea."], fr: ["Service traiteur", "Une table pensée autour de la mer."] },
-  story: { image: "/seafood/fishmonger.jpg", en: ["Our story", "More than 50 years at the counter."], fr: ["Notre histoire", "Plus de 50 ans derrière le comptoir."] },
-  contact: { image: "/seafood/oysters.jpg", en: ["Visit us", "The counter is open."], fr: ["Nous visiter", "Le comptoir vous attend."] },
-  privacy: { image: "/seafood/caviar.jpg", en: ["Privacy", "Clear, considered, respectful."], fr: ["Confidentialité", "Clair, réfléchi, respectueux."] },
+  market: { image: "/sherbrooke/salmon.webp", en: ["The market", "Today’s sea, selected by hand."], fr: ["La poissonnerie", "La mer du jour, choisie à la main."] },
+  menu: { image: "/sherbrooke/lobster-roll.webp", en: ["Chef’s menu", "Restaurant craft, ready for home."], fr: ["Menu du chef", "Le savoir-faire du restaurant, à emporter."] },
+  catering: { image: "/sherbrooke/shellfish-platter.webp", en: ["Catering", "A table built around the sea."], fr: ["Service traiteur", "Une table pensée autour de la mer."] },
+  story: { image: "/sherbrooke/chef-paul.webp", en: ["Our story", "More than 50 years at the counter."], fr: ["Notre histoire", "Plus de 50 ans derrière le comptoir."] },
+  contact: { image: "/sherbrooke/oysters.webp", en: ["Visit us", "The counter is open."], fr: ["Nous visiter", "Le comptoir vous attend."] },
+  privacy: { image: "/sherbrooke/atlantic-water.webp", en: ["Privacy", "Clear, considered, respectful."], fr: ["Confidentialité", "Clair, réfléchi, respectueux."] },
 } as const;
 
 const dishGallery = [
-  { image: "/seafood/lobster-roll.jpg", en: "Lobster roll", fr: "Guédille au homard" },
-  { image: "/seafood/oysters.jpg", en: "Fresh oysters", fr: "Huîtres fraîches" },
-  { image: "/seafood/paella.jpg", en: "Seafood paella", fr: "Paella aux fruits de mer" },
-  { image: "/seafood/platter.jpg", en: "Mixed platters", fr: "Plateaux assortis" },
+  { image: "/sherbrooke/lobster-roll.webp", en: "Lobster roll", fr: "Guédille au homard" },
+  { image: "/sherbrooke/oysters.webp", en: "Fresh oysters", fr: "Huîtres fraîches" },
+  { image: "/sherbrooke/tuna-dish.webp", en: "Seared tuna", fr: "Thon saisi" },
+  { image: "/sherbrooke/seafood-feast.webp", en: "Chef’s seafood feast", fr: "Festin de fruits de mer du chef" },
+  { image: "/sherbrooke/stuffed-fish.webp", en: "Stuffed fish", fr: "Poisson farci" },
+  { image: "/sherbrooke/chef-signature.webp", en: "Chef Paul’s signature", fr: "La signature du chef Paul" },
+];
+
+const archiveGallery = [
+  { image: "/sherbrooke/archive-feature.webp", en: "A Montréal seafood story", fr: "Une histoire montréalaise de fruits de mer" },
+  { image: "/sherbrooke/archive-anniversary.webp", en: "A half-century at the counter", fr: "Un demi-siècle derrière le comptoir" },
+  { image: "/sherbrooke/archive-newspaper-ad.webp", en: "Market selections through the years", fr: "Les sélections de la poissonnerie au fil des ans" },
+  { image: "/sherbrooke/archive-best-montreal.webp", en: "Best of Montréal archive", fr: "Archive Best of Montréal" },
+  { image: "/sherbrooke/archive-greek-products.webp", en: "Fine-food discoveries", fr: "Découvertes d’épicerie fine" },
+  { image: "/sherbrooke/archive-seasonal.webp", en: "Seafood season at Sherbrooke", fr: "La saison des fruits de mer chez Sherbrooke" },
+  { image: "/sherbrooke/archive-holiday.webp", en: "Chef Paul’s holiday table", fr: "La table des Fêtes du chef Paul" },
+  { image: "/sherbrooke/archive-lobsters.webp", en: "Lobster arrivals", fr: "Arrivages de homard" },
+  { image: "/sherbrooke/archive-hiring.webp", en: "Team archive", fr: "Archives de l’équipe" },
 ];
 
 function Arrow() { return <span className="cta-arrow" aria-hidden="true">↗</span>; }
 
 function Brand() {
   return (
-    <span className="ps-brand" aria-label="Poissonnerie Sherbrooke">
-      <span className="ps-monogram">PS</span>
-      <span className="ps-wordmark">Poissonnerie<br />Sherbrooke</span>
+    <span className="ps-brand">
+      <img src="/sherbrooke/wordmark.webp" alt="Poissonnerie Sherbrooke" width="2940" height="881" />
     </span>
   );
 }
@@ -147,7 +160,7 @@ function Home({ locale }: { locale: Locale }) {
   return (
     <>
       <section className="site-hero home-hero">
-        <img className="hero-background" src="/seafood/market-ice.jpg" alt={locale === "en" ? "Fresh seafood displayed over crushed ice at a fish market" : "Fruits de mer frais présentés sur glace concassée à la poissonnerie"} width="2400" height="1600" fetchPriority="high" />
+        <img className="hero-background" src="/sherbrooke/hero-counter.webp" alt={locale === "en" ? "The fresh seafood counter at Poissonnerie Sherbrooke" : "Le comptoir de fruits de mer frais de la Poissonnerie Sherbrooke"} width="2400" height="2633" fetchPriority="high" />
         <div className="hero-shade" />
         <div className="ice-light" aria-hidden="true" />
         <div className="hero-content">
@@ -189,7 +202,7 @@ function Home({ locale }: { locale: Locale }) {
       </section>
 
       <section className="promise-section">
-        <img src="/seafood/oysters.jpg" alt="" aria-hidden="true" width="1800" height="2700" loading="lazy" />
+        <img src="/sherbrooke/seafood-feast.webp" alt="" aria-hidden="true" width="2443" height="1909" loading="lazy" />
         <div className="promise-shade" />
         <div className="promise-lines reveal">{t.promise.map((line, index) => <p style={{ "--line-delay": `${index * 100}ms` } as React.CSSProperties} key={line}>{line}</p>)}</div>
       </section>
@@ -197,13 +210,13 @@ function Home({ locale }: { locale: Locale }) {
       <section className="traceability section-dark">
         <div className="trace-heading reveal"><span className="eyebrow">{t.trace.eyebrow}</span><h2>{t.trace.title}</h2><p>{t.trace.body}</p></div>
         <div className="trace-stage reveal">
-          <img src="/seafood/salmon-ice.jpg" alt={locale === "en" ? "Fresh salmon and fish fillets at a market counter" : "Saumon et filets de poisson frais au comptoir"} width="2000" height="1333" loading="lazy" />
+          <img src="/sherbrooke/salmon.webp" alt={locale === "en" ? "Fresh salmon portions from the Sherbrooke counter" : "Portions de saumon frais du comptoir Sherbrooke"} width="2250" height="1802" loading="lazy" />
           {t.trace.labels.map((label, index) => <div className={`trace-label trace-${index + 1}`} key={label}><i /><span>{label}</span></div>)}
         </div>
       </section>
 
       <section className="chef-section section-cream">
-        <div className="chef-image reveal"><img src="/seafood/fishmonger.jpg" alt={locale === "en" ? "An experienced fishmonger working behind a seafood counter" : "Un poissonnier d’expérience derrière un comptoir de fruits de mer"} width="1800" height="2700" loading="lazy" /><span>40+</span></div>
+        <div className="chef-image reveal"><img src="/sherbrooke/chef-paul.webp" alt={locale === "en" ? "Chef Paul at Poissonnerie Sherbrooke" : "Le chef Paul à la Poissonnerie Sherbrooke"} width="1818" height="2424" loading="lazy" /><span>40+</span></div>
         <div className="chef-copy reveal">
           <span className="eyebrow dark">{t.chef.eyebrow}</span><h2>{t.chef.title}</h2><p>{t.chef.body}</p>
           <div className="chef-actions"><Link className="primary-cta dark-cta" href={routeMap[locale].menu}>{locale === "en" ? "Discover the menu" : "Découvrir le menu"}<Arrow /></Link><a href={business.telephoneHref}>{locale === "en" ? "Call to order" : "Commander par téléphone"} <span>→</span></a></div>
@@ -219,7 +232,7 @@ function Home({ locale }: { locale: Locale }) {
       </section>
 
       <section className="catering-feature">
-        <img src="/seafood/platter.jpg" alt={locale === "en" ? "A generous seafood platter prepared for sharing" : "Un généreux plateau de fruits de mer à partager"} width="2000" height="1334" loading="lazy" />
+        <img src="/sherbrooke/shellfish-platter.webp" alt={locale === "en" ? "A generous lobster and shellfish platter prepared by Poissonnerie Sherbrooke" : "Un généreux plateau de homard et fruits de mer préparé par la Poissonnerie Sherbrooke"} width="2991" height="1994" loading="lazy" />
         <div className="catering-panel liquid-panel reveal"><span className="eyebrow">{t.catering.eyebrow}</span><h2>{t.catering.title}</h2><p>{t.catering.body}</p><div className="event-labels">{t.catering.labels.map((label) => <span key={label}>{label}</span>)}</div><div className="catering-actions"><Link className="primary-cta coral-cta" href={routeMap[locale].catering}>{t.catering.primary}<Arrow /></Link><a href={business.telephoneHref}>{t.catering.secondary} <span>→</span></a></div></div>
       </section>
 
@@ -284,7 +297,7 @@ function MenuPage({ locale }: { locale: Locale }) {
       <div className="menu-groups reveal">
         {filtered.length ? filtered.map((group, index) => <section key={group.title}><header><span>0{index + 1}</span><h3>{group.title}</h3></header><ul>{group.items.map((item) => <li key={item}>{item}<span>{locale === "en" ? "Ask about today" : "Selon les arrivages"}</span></li>)}</ul></section>) : <p className="no-results">{locale === "en" ? "No menu items match that search." : "Aucun plat ne correspond à cette recherche."}</p>}
       </div>
-      <div className="lobster-feature reveal"><img src="/seafood/lobster-roll.jpg" alt={locale === "en" ? "Lobster roll served on a brioche bun" : "Guédille au homard servie sur brioche"} width="1800" height="1200" loading="lazy" /><div className="liquid-panel"><span className="eyebrow">{locale === "en" ? "The signature" : "La signature"}</span><h2>{locale === "en" ? "The lobster roll." : "La guédille au homard."}</h2><p>{copy[locale].dishes.body}</p><a className="primary-cta coral-cta" href={business.telephoneHref}>{locale === "en" ? "Call to order" : "Commander par téléphone"}<Arrow /></a></div></div>
+      <div className="lobster-feature reveal"><img src="/sherbrooke/lobster-roll.webp" alt={locale === "en" ? "Poissonnerie Sherbrooke lobster roll served on a brioche bun" : "Guédille au homard de la Poissonnerie Sherbrooke servie sur brioche"} width="2400" height="1586" loading="lazy" /><div className="liquid-panel"><span className="eyebrow">{locale === "en" ? "The signature" : "La signature"}</span><h2>{locale === "en" ? "The lobster roll." : "La guédille au homard."}</h2><p>{copy[locale].dishes.body}</p><a className="primary-cta coral-cta" href={business.telephoneHref}>{locale === "en" ? "Call to order" : "Commander par téléphone"}<Arrow /></a></div></div>
     </section>
   );
 }
@@ -302,7 +315,19 @@ function CateringPage({ locale }: { locale: Locale }) {
 
 function StoryPage({ locale }: { locale: Locale }) {
   const rows = locale === "en" ? [["More than 50 years", "A longstanding neighbourhood market serving generations of Montréal customers."], ["Daily freshness", "Fish and seafood received daily, selected for condition and prepared with care."], ["Traceable origins", "Local and international products with origin information available at the counter."], ["Experienced hands", "Fishmongers who cut, clean, recommend and answer the practical questions."], ["Chef-led preparation", "Chef Paul brings over 40 years of Montréal restaurant experience to the market."]] : [["Plus de 50 ans", "Une poissonnerie de quartier qui sert plusieurs générations de Montréalais."], ["Fraîcheur quotidienne", "Poissons et fruits de mer reçus chaque jour, choisis et préparés avec soin."], ["Provenance traçable", "Produits locaux et internationaux dont la provenance est disponible au comptoir."], ["Des mains d’expérience", "Des poissonniers qui coupent, nettoient, conseillent et répondent aux questions pratiques."], ["Une cuisine dirigée par le chef", "Le chef Paul apporte plus de 40 ans d’expérience dans les restaurants montréalais."]];
-  return <section className="editorial-page story-page section-cream"><div className="story-statement reveal"><span>01 / {locale === "en" ? "The institution" : "L’institution"}</span><h2>{locale === "en" ? "Established by time. Kept current by the day’s catch." : "Établie par le temps. Renouvelée par les arrivages du jour."}</h2></div><div className="story-rows">{rows.map(([title, body], index) => <article className="reveal" key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p><i>—</i></article>)}</div><div className="story-image reveal"><img src="/seafood/fishmonger.jpg" alt={locale === "en" ? "Fishmonger working at a busy seafood counter" : "Poissonnier au travail derrière un comptoir animé"} width="1800" height="2700" loading="lazy" /><div className="liquid-panel">{locale === "en" ? "Personal service is still the point." : "Le service personnel reste essentiel."}</div></div></section>;
+  return (
+    <section className="editorial-page story-page section-cream">
+      <div className="story-statement reveal"><span>01 / {locale === "en" ? "The institution" : "L’institution"}</span><h2>{locale === "en" ? "Established by time. Kept current by the day’s catch." : "Établie par le temps. Renouvelée par les arrivages du jour."}</h2></div>
+      <div className="story-rows">{rows.map(([title, body], index) => <article className="reveal" key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{body}</p><i>—</i></article>)}</div>
+      <div className="story-image reveal"><img src="/sherbrooke/chef-paul.webp" alt={locale === "en" ? "Chef Paul at the neighbourhood market" : "Le chef Paul à la poissonnerie de quartier"} width="1818" height="2424" loading="lazy" /><div className="liquid-panel">{locale === "en" ? "Personal service is still the point." : "Le service personnel reste essentiel."}</div></div>
+      <div className="archive-section reveal">
+        <div className="archive-heading"><span>02 / {locale === "en" ? "From the archive" : "Dans les archives"}</span><h2>{locale === "en" ? "A neighbourhood institution, documented." : "Une institution de quartier, en images."}</h2><p>{locale === "en" ? "Press, seasonal menus and market moments preserved from the Poissonnerie Sherbrooke archive. Historical material is shown as part of our story, not as a current offer." : "Presse, menus saisonniers et moments de la poissonnerie conservés dans les archives de la Poissonnerie Sherbrooke. Ces documents historiques ne représentent pas des offres actuelles."}</p></div>
+        <div className="archive-strip" tabIndex={0} aria-label={locale === "en" ? "Poissonnerie Sherbrooke historical archive" : "Archives historiques de la Poissonnerie Sherbrooke"}>
+          {archiveGallery.map((item, index) => <figure className="archive-card" key={item.image}><img src={item.image} alt={locale === "en" ? item.en : item.fr} loading="lazy" /><figcaption><span>{String(index + 1).padStart(2, "0")}</span>{locale === "en" ? item.en : item.fr}</figcaption></figure>)}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function ContactPage({ locale }: { locale: Locale }) {
