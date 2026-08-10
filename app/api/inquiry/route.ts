@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   const to = process.env.INQUIRY_TO_EMAIL;
   if (!apiKey || !to) return Response.json({ message: "Online sending is not configured. Please call or email the market." }, { status: 503 });
 
-  const subject = body.type === "catering" ? "New catering inquiry" : "New website inquiry";
+  const subject = body.type === "catering" ? "New catering quote request" : "New website inquiry";
   const details = Object.entries(body).filter(([key]) => !["website", "consent"].includes(key)).map(([key, value]) => `${key}: ${String(value)}`).join("\n");
   const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: "Poissonnerie Sherbrooke Website <onboarding@resend.dev>", to: [to], reply_to: body.email, subject, text: details }) });
   if (!response.ok) return Response.json({ message: "We could not send your request. Please call or email the market." }, { status: 502 });

@@ -2,7 +2,16 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import SeafoodSite from "@/components/SeafoodSite";
-import { Locale, PageKey, routeMap } from "@/lib/content";
+import {
+  isMarketCategorySlug,
+  Locale,
+  marketCategories,
+  marketCategoryPageSlugs,
+  marketCategoryPath,
+  PageKey,
+  routeMap,
+  type MarketCategorySlug,
+} from "@/lib/content";
 
 const pageTitles: Record<Locale, Record<PageKey, string>> = {
   en: {
@@ -10,6 +19,7 @@ const pageTitles: Record<Locale, Record<PageKey, string>> = {
     market: "Fresh Fish & Seafood Market in Montréal | Poissonnerie Sherbrooke",
     menu: "Chef Paul’s Seafood Menu | Poissonnerie Sherbrooke",
     catering: "Seafood Catering in Montréal | Poissonnerie Sherbrooke",
+    quote: "Request a Catering Quote | Poissonnerie Sherbrooke",
     story: "Our Story | Poissonnerie Sherbrooke Montréal",
     contact: "Visit & Contact | Poissonnerie Sherbrooke",
     privacy: "Privacy | Poissonnerie Sherbrooke",
@@ -19,6 +29,7 @@ const pageTitles: Record<Locale, Record<PageKey, string>> = {
     market: "Poissons frais et fruits de mer à Montréal | Poissonnerie Sherbrooke",
     menu: "Menu de fruits de mer du chef Paul | Poissonnerie Sherbrooke",
     catering: "Service traiteur de fruits de mer à Montréal | Poissonnerie Sherbrooke",
+    quote: "Demander un devis traiteur | Poissonnerie Sherbrooke",
     story: "Notre histoire | Poissonnerie Sherbrooke Montréal",
     contact: "Nous visiter et nous joindre | Poissonnerie Sherbrooke",
     privacy: "Confidentialité | Poissonnerie Sherbrooke",
@@ -30,13 +41,44 @@ const descriptions: Record<Locale, string> = {
   fr: "Découvrez poissons frais, fruits de mer, huîtres, homard, spécialités du chef et service traiteur de la Poissonnerie Sherbrooke, au service de Montréal depuis plus de 50 ans.",
 };
 
-const routeLookup = new Map<string, { locale: Locale; page: PageKey }>();
+type ResolvedRoute = { locale: Locale; page: PageKey; category?: MarketCategorySlug };
+
+const routeLookup = new Map<string, ResolvedRoute>();
 for (const locale of ["en", "fr"] as Locale[]) {
-  for (const [page, path] of Object.entries(routeMap[locale]) as [PageKey, string][]) routeLookup.set(path.slice(1), { locale, page });
+  for (const [page, path] of Object.entries(routeMap[locale]) as [PageKey, string][]) {
+    routeLookup.set(path.slice(1), { locale, page });
+  }
+  for (const category of marketCategoryPageSlugs) {
+    routeLookup.set(marketCategoryPath(locale, category).slice(1), { locale, page: "market", category });
+  }
 }
 
-function resolveRoute(slug: string[]) {
-  return routeLookup.get(slug.join("/"));
+function resolveRoute(slug: string[]): ResolvedRoute | undefined {
+  const exact = routeLookup.get(slug.join("/"));
+  if (exact) return exact;
+  if (slug.length === 3) {
+    const [localeSeg, marketSeg, categorySlug] = slug;
+    if ((localeSeg === "en" || localeSeg === "fr") && isMarketCategorySlug(categorySlug)) {
+      const expected = routeMap[localeSeg].market.slice(1).split("/");
+      if (expected[0] === localeSeg && expected[1] === marketSeg) {
+        return { locale: localeSeg, page: "market", category: categorySlug };
+      }
+    }
+  }
+  return undefined;
+}
+
+function categoryTitle(locale: Locale, category: MarketCategorySlug) {
+  const name = marketCategories[locale].find((item) => item.slug === category)?.name ?? category;
+  return `${name} | Poissonnerie Sherbrooke`;
+}
+
+function categoryDescription(locale: Locale, category: MarketCategorySlug) {
+  const item = marketCategories[locale].find((entry) => entry.slug === category);
+  if (!item) return descriptions[locale];
+  return locale === "en"
+    ? `${item.note} Shop ${item.name.toLowerCase()} at Poissonnerie Sherbrooke in Montréal.`
+    : `${item.note} Découvrez ${item.name.toLowerCase()} à la Poissonnerie Sherbrooke à Montréal.`;
 }
 
 export function generateStaticParams() {
@@ -51,12 +93,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3002";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
+  const title = route.category ? categoryTitle(route.locale, route.category) : pageTitles[route.locale][route.page];
+  const description = route.category ? categoryDescription(route.locale, route.category) : descriptions[route.locale];
+  const canonicalPath = route.category ? marketCategoryPath(route.locale, route.category) : routeMap[route.locale][route.page];
+  const enPath = route.category ? marketCategoryPath("en", route.category) : routeMap.en[route.page];
+  const frPath = route.category ? marketCategoryPath("fr", route.category) : routeMap.fr[route.page];
   return {
-    title: pageTitles[route.locale][route.page],
-    description: descriptions[route.locale],
-    alternates: { canonical: `${origin}${routeMap[route.locale][route.page]}`, languages: { "en-CA": `${origin}${routeMap.en[route.page]}`, "fr-CA": `${origin}${routeMap.fr[route.page]}` } },
-    openGraph: { title: pageTitles[route.locale][route.page], description: descriptions[route.locale], locale: route.locale === "en" ? "en_CA" : "fr_CA", type: "website", images: [{ url: `${origin}/og.png`, width: 1536, height: 896, alt: "Poissonnerie Sherbrooke" }] },
-    twitter: { card: "summary_large_image", title: pageTitles[route.locale][route.page], description: descriptions[route.locale], images: [`${origin}/og.png`] },
+    title,
+    description,
+    alternates: { canonical: `${origin}${canonicalPath}`, languages: { "en-CA": `${origin}${enPath}`, "fr-CA": `${origin}${frPath}` } },
+    openGraph: { title, description, locale: route.locale === "en" ? "en_CA" : "fr_CA", type: "website", images: [{ url: `${origin}/og.png`, width: 1536, height: 896, alt: "Poissonnerie Sherbrooke" }] },
+    twitter: { card: "summary_large_image", title, description, images: [`${origin}/og.png`] },
   };
 }
 
@@ -64,5 +111,5 @@ export default async function LocalizedPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const route = resolveRoute(slug);
   if (!route) notFound();
-  return <SeafoodSite locale={route.locale} page={route.page} />;
+  return <SeafoodSite locale={route.locale} page={route.page} category={route.category} />;
 }
