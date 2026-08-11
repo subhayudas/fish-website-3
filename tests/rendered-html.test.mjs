@@ -1,20 +1,22 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
-const developmentPreviewMeta =
-  /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
-const templateRoot = new URL("../", import.meta.url);
-const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
+let workerPromise;
 
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
+function getWorker() {
+  workerPromise ??= import(new URL("../dist/server/index.js", import.meta.url)).then(
+    ({ default: worker }) => worker,
+  );
+  return workerPromise;
+}
 
+async function render(path, headers = {}) {
+  const worker = await getWorker();
   return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
+    new Request(`http://localhost${path}`, {
+      headers: { accept: "text/html", ...headers },
+      redirect: "manual",
     }),
     {
       ASSETS: {
@@ -28,64 +30,47 @@ async function render() {
   );
 }
 
-test("server-renders the starter loading skeleton", async () => {
-  const response = await render();
+test("server-renders the localized homepage with optimized discovery hints", async () => {
+  const response = await render("/en");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, developmentPreviewMeta);
-  assert.match(html, /<title>Your site is taking shape<\/title>/i);
-  assert.match(html, /Building your site/);
-  assert.match(html, /Your site is taking shape/);
-  assert.match(
-    html,
-    /Your first version will appear here automatically when it’s ready\./,
-  );
-  assert.doesNotMatch(html, /Codex/);
-  assert.match(html, /react-loading-skeleton/);
-  assert.match(html, /role="status"/);
+  assert.match(html, /<html lang="en"/);
+  assert.match(html, /Montréal’s fresh fish market since 1975\./);
+  assert.match(html, /hero-counter-768\.webp 768w/);
+  assert.match(html, /hero-counter-1280\.webp 1280w/);
+  assert.match(html, /fetchPriority="high"/);
+  assert.match(html, /viewport-fit=cover/);
+  assert.match(html, /rel="canonical" href="https:\/\/fin-living-colour\.subhayu435824\.chatgpt\.site\/en"/);
+  assert.match(html, /og\.jpg/);
+  assert.doesNotMatch(html, /language-gate/);
+  assert.doesNotMatch(response.headers.get("link") ?? "", /as=font/);
 });
 
-test("keeps the loading skeleton scoped and disposable", async () => {
-  const [preview, css, page, layout, packageJson, files] = await Promise.all([
-    readFile(new URL("SkeletonPreview.tsx", previewRoot), "utf8"),
-    readFile(new URL("preview.css", previewRoot), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-    readdir(previewRoot),
+test("bare-domain entry redirects before hydration using the request language", async () => {
+  const french = await render("/", { "accept-language": "fr-CA,fr;q=0.9,en;q=0.8" });
+  assert.equal(french.status, 307);
+  assert.equal(new URL(french.headers.get("location")).pathname, "/fr");
+
+  const english = await render("/", { "accept-language": "en-CA,en;q=0.9" });
+  assert.equal(english.status, 307);
+  assert.equal(new URL(english.headers.get("location")).pathname, "/en");
+});
+
+test("ships compact mobile and social-preview assets with cache rules", async () => {
+  const [hero, wordmark, social, headers] = await Promise.all([
+    stat(new URL("../public/sherbrooke/hero-counter-768.webp", import.meta.url)),
+    stat(new URL("../public/sherbrooke/wordmark-640.webp", import.meta.url)),
+    stat(new URL("../public/og.jpg", import.meta.url)),
+    readFile(new URL("../public/_headers", import.meta.url), "utf8"),
   ]);
 
-  assert.deepEqual(files.sort(), ["SkeletonPreview.tsx", "preview.css"]);
-  assert.match(preview, /from "react-loading-skeleton"/);
-  assert.match(preview, /baseColor="#eceae7"/);
-  assert.match(preview, /highlightColor="#f9f8f6"/);
-  assert.match(preview, /duration=\{2\.8\}/);
-  assert.match(preview, /sites-skeleton-search-placeholder/);
-  assert.match(packageJson, /"react-loading-skeleton": "3\.5\.0"/);
-
-  const shellIndex = preview.indexOf('className="sites-skeleton-shell"');
-  const statusIndex = preview.indexOf('className="sites-skeleton-status"');
-  assert.ok(shellIndex >= 0 && statusIndex > shellIndex);
-  assert.match(css, /position:\s*fixed/);
-  assert.match(css, /inset:\s*0/);
-  assert.match(css, /opacity:\s*0\.52/);
-  assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.doesNotMatch(css, /#020617|canvas|pets|progress/i);
-  assert.doesNotMatch(
-    preview,
-    /loading-spinner|status-mark|status-progress|canvas|cookie|random/i,
-  );
-
-  assert.match(page, /export const metadata:\s*Metadata/);
-  assert.match(page, /"codex-preview": "development"/);
-  assert.match(page, /<SkeletonPreview \/>/);
-  assert.match(layout, /title:\s*"Starter Project"/);
-  assert.doesNotMatch(layout, /codex-preview|_sites-preview|themeColor|\bViewport\b/);
-  assert.doesNotMatch(css, /(^|\s)(html|body)\s*\{/m);
-
-  await assert.rejects(
-    access(new URL("public/_sites-preview", templateRoot)),
-  );
+  assert.ok(hero.size < 120_000);
+  assert.ok(wordmark.size < 25_000);
+  assert.ok(social.size < 300_000);
+  assert.match(headers, /\/assets\/\*/);
+  assert.match(headers, /max-age=31536000, immutable/);
+  assert.match(headers, /\/sherbrooke\/\*/);
+  assert.match(headers, /stale-while-revalidate/);
 });

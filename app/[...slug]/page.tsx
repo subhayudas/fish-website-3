@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import SeafoodSite from "@/components/SeafoodSite";
 import {
@@ -40,6 +39,9 @@ const descriptions: Record<Locale, string> = {
   en: "Discover fresh fish, seafood, oysters, lobster, chef-prepared specialties and catering from Poissonnerie Sherbrooke, serving Montréal for more than 50 years.",
   fr: "Découvrez poissons frais, fruits de mer, huîtres, homard, spécialités du chef et service traiteur de la Poissonnerie Sherbrooke, au service de Montréal depuis plus de 50 ans.",
 };
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "")
+  ?? "https://fin-living-colour.subhayu435824.chatgpt.site";
 
 type ResolvedRoute = { locale: Locale; page: PageKey; category?: MarketCategorySlug };
 
@@ -89,10 +91,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const route = resolveRoute(slug);
   if (!route) return {};
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3002";
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
-  const origin = `${protocol}://${host}`;
   const title = route.category ? categoryTitle(route.locale, route.category) : pageTitles[route.locale][route.page];
   const description = route.category ? categoryDescription(route.locale, route.category) : descriptions[route.locale];
   const canonicalPath = route.category ? marketCategoryPath(route.locale, route.category) : routeMap[route.locale][route.page];
@@ -101,9 +99,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
-    alternates: { canonical: `${origin}${canonicalPath}`, languages: { "en-CA": `${origin}${enPath}`, "fr-CA": `${origin}${frPath}` } },
-    openGraph: { title, description, locale: route.locale === "en" ? "en_CA" : "fr_CA", type: "website", images: [{ url: `${origin}/og.png`, width: 1536, height: 896, alt: "Poissonnerie Sherbrooke" }] },
-    twitter: { card: "summary_large_image", title, description, images: [`${origin}/og.png`] },
+    alternates: { canonical: `${siteUrl}${canonicalPath}`, languages: { "en-CA": `${siteUrl}${enPath}`, "fr-CA": `${siteUrl}${frPath}`, "x-default": `${siteUrl}/en` } },
+    openGraph: { title, description, url: `${siteUrl}${canonicalPath}`, siteName: "Poissonnerie Sherbrooke", locale: route.locale === "en" ? "en_CA" : "fr_CA", type: "website", images: [{ url: `${siteUrl}/og.jpg`, width: 1200, height: 630, alt: "Poissonnerie Sherbrooke" }] },
+    twitter: { card: "summary_large_image", title, description, images: [`${siteUrl}/og.jpg`] },
   };
 }
 

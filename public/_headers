@@ -1,0 +1,17 @@
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/sherbrooke/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/seafood/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/fish/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/og.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400

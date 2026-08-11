@@ -1,5 +1,8 @@
 "use client";
 
+/* Native responsive images are used because the vinext deployment does not provide Next.js image optimization. */
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -232,7 +235,7 @@ function TrustSection({ locale }: { locale: Locale }) {
         rel="noreferrer"
         aria-label={locale === "en" ? "See Poissonnerie Sherbrooke reviews on Google" : "Voir les avis de la Poissonnerie Sherbrooke sur Google"}
       >
-        <img src="/icons/google-logo.svg" alt="" width="20" height="20" />
+        <img src="/icons/google-logo.svg" alt="" width="20" height="20" loading="lazy" />
         <span>{t.googleBadge}</span>
       </a>
       <div className="trust-stats reveal">
@@ -273,39 +276,20 @@ function TrustSection({ locale }: { locale: Locale }) {
   );
 }
 
-function Brand() {
+function Brand({ priority = false }: { priority?: boolean }) {
   return (
     <span className="ps-brand">
-      <img src="/sherbrooke/wordmark.webp" alt="Poissonnerie Sherbrooke" width="2940" height="881" />
+      <img src="/sherbrooke/wordmark-640.webp" alt="Poissonnerie Sherbrooke" width="640" height="192" fetchPriority={priority ? "high" : undefined} />
     </span>
   );
 }
 
-function LanguageGate({
-  onChoose,
-}: {
-  onChoose: (locale: Locale) => void;
-}) {
-  return (
-    <div className="language-gate" role="dialog" aria-modal="true" aria-labelledby="language-gate-title">
-      <div className="language-gate-card">
-        <Brand />
-        <p className="language-gate-eyebrow">Poissonnerie Sherbrooke · Montréal</p>
-        <h2 id="language-gate-title">
-          Choose your language
-          <span>Choisissez votre langue</span>
-        </h2>
-        <div className="language-gate-actions">
-          <button type="button" className="language-gate-option" onClick={() => onChoose("en")}>
-            English
-          </button>
-          <button type="button" className="language-gate-option" onClick={() => onChoose("fr")}>
-            Français
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+function responsiveImage(image: string) {
+  return image.replace(/\.webp$/, "-768.webp");
+}
+
+function categoryThumbnail(image: string) {
+  return image.replace(/\.webp$/, "-thumb.webp");
 }
 
 type Props = { locale: Locale; page: PageKey; category?: MarketCategorySlug };
@@ -315,7 +299,6 @@ export default function SeafoodSite({ locale, page, category }: Props) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [headerSolid, setHeaderSolid] = useState(page === "quote");
-  const [showLanguageGate, setShowLanguageGate] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
   const localePath = (target: Locale) => (category ? marketCategoryPath(target, category) : routeMap[target][page]);
@@ -328,23 +311,13 @@ export default function SeafoodSite({ locale, page, category }: Props) {
     router.push(`${localePath(target)}${hash}`, { scroll: false });
   }
 
-  function chooseInitialLocale(target: Locale) {
-    writeStoredLocale(target);
-    setShowLanguageGate(false);
-    if (target === locale) return;
-    router.replace(localePath(target), { scroll: false });
-  }
-
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en-CA" : "fr-CA";
   }, [locale]);
 
   useEffect(() => {
     const stored = readStoredLocale();
-    if (!stored) {
-      setShowLanguageGate(true);
-      return;
-    }
+    if (!stored) return;
     if (stored === locale) return;
     router.replace(`${localePath(stored)}${window.location.hash}`, { scroll: false });
     // Intentionally keyed to route identity so preference redirects once per mismatched page.
@@ -365,26 +338,28 @@ export default function SeafoodSite({ locale, page, category }: Props) {
   }, [locale, page, category]);
 
   useEffect(() => {
-    document.body.style.overflow = showLanguageGate || menuOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [showLanguageGate, menuOpen]);
+  }, [menuOpen]);
 
   useEffect(() => {
+    const nodes = document.querySelectorAll(".reveal");
+    if (!("IntersectionObserver" in window)) {
+      nodes.forEach((node) => node.classList.add("visible"));
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.target.classList.toggle("visible", entry.isIntersecting)),
       { threshold: 0.12 },
     );
-    document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
+    nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
   }, [page, locale, category]);
 
   useEffect(() => {
     const hero = document.querySelector(".site-hero");
-    if (!hero) {
-      setHeaderSolid(true);
-      return;
-    }
-    setHeaderSolid(false);
+    if (!hero) return;
+    if (!("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(([entry]) => setHeaderSolid(!entry.isIntersecting), { threshold: 0.1 });
     observer.observe(hero);
     return () => observer.disconnect();
@@ -437,9 +412,8 @@ export default function SeafoodSite({ locale, page, category }: Props) {
       <a className="skip-link" href="#main-content">{locale === "en" ? "Skip to content" : "Aller au contenu"}</a>
       <div className="grain" aria-hidden="true" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      {showLanguageGate && <LanguageGate onChoose={chooseInitialLocale} />}
       <header className={`nav-island ${headerSolid ? "nav-solid" : ""}`}>
-        <Link className="brand-link" href={routeMap[locale].home}><Brand /></Link>
+        <Link className="brand-link" href={routeMap[locale].home}><Brand priority /></Link>
         <nav className="desktop-nav" aria-label={locale === "en" ? "Main navigation" : "Navigation principale"}>
           {nav.map((item) => <a key={item.id} href={item.href}>{item.label}</a>)}
         </nav>
@@ -513,7 +487,7 @@ function Home({ locale }: { locale: Locale }) {
   return (
     <>
       <section className="site-hero home-hero">
-        <img className="hero-background" src="/sherbrooke/hero-counter.webp" alt={locale === "en" ? "The fresh seafood counter at Poissonnerie Sherbrooke" : "Le comptoir de fruits de mer frais de la Poissonnerie Sherbrooke"} width="2400" height="2633" fetchPriority="high" />
+        <img className="hero-background" src="/sherbrooke/hero-counter-1280.webp" srcSet="/sherbrooke/hero-counter-768.webp 768w, /sherbrooke/hero-counter-1280.webp 1280w, /sherbrooke/hero-counter.webp 1320w" sizes="100vw" alt={locale === "en" ? "The fresh seafood counter at Poissonnerie Sherbrooke" : "Le comptoir de fruits de mer frais de la Poissonnerie Sherbrooke"} width="2400" height="2633" fetchPriority="high" />
         <div className="hero-shade" />
         <div className="ice-light" aria-hidden="true" />
         <div className="hero-content">
@@ -544,7 +518,7 @@ function Home({ locale }: { locale: Locale }) {
         <div className="category-shop-grid reveal">
           {shopCategories.map((category) => (
             <Link className="category-card" href={categoryHref(category.slug)} key={category.slug}>
-              <img src={shopCategoryImages[category.slug as keyof typeof shopCategoryImages]} alt="" aria-hidden="true" width="1200" height="1200" loading="lazy" />
+              <img src={categoryThumbnail(shopCategoryImages[category.slug as keyof typeof shopCategoryImages])} alt="" aria-hidden="true" width="400" height="400" loading="lazy" />
               <span className="category-card-label">{category.name}</span>
             </Link>
           ))}
@@ -560,7 +534,7 @@ function Home({ locale }: { locale: Locale }) {
       <TrustSection locale={locale} />
 
       <section id="catering" className="catering-feature">
-        <img src="/sherbrooke/shellfish-platter.webp" alt={locale === "en" ? "A generous lobster and shellfish platter prepared by Poissonnerie Sherbrooke" : "Un généreux plateau de homard et fruits de mer préparé par la Poissonnerie Sherbrooke"} width="2991" height="1994" loading="lazy" />
+        <img src="/sherbrooke/shellfish-platter.webp" srcSet="/sherbrooke/shellfish-platter-768.webp 768w, /sherbrooke/shellfish-platter.webp 1600w" sizes="100vw" alt={locale === "en" ? "A generous lobster and shellfish platter prepared by Poissonnerie Sherbrooke" : "Un généreux plateau de homard et fruits de mer préparé par la Poissonnerie Sherbrooke"} width="2991" height="1994" loading="lazy" />
         <div className="catering-panel liquid-panel reveal">
           <span className="eyebrow">{t.catering.eyebrow}</span>
           <h2>{t.catering.title}</h2>
@@ -593,7 +567,7 @@ function InnerPage({ locale, page, category }: Props) {
     <>
       {page !== "quote" && (
         <section className={`site-hero inner-hero hero-${page}`}>
-          <img className="hero-background" src={heroImage} alt="" aria-hidden="true" width="2000" height="1333" fetchPriority="high" />
+          <img className="hero-background" src={heroImage} srcSet={`${responsiveImage(heroImage)} 768w, ${heroImage} 1600w`} sizes="100vw" alt="" aria-hidden="true" width="2000" height="1333" fetchPriority="high" />
           <div className="hero-shade" />
           <div className="inner-hero-content">
             <span className="eyebrow">Poissonnerie Sherbrooke · Montréal</span>
