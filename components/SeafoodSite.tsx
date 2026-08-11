@@ -415,9 +415,9 @@ export default function SeafoodSite({ locale, page, category }: Props) {
   const nav = [
     { id: "shop", label: t.navigation.market, href: `${homePath}#shop` },
     { id: "reviews", label: locale === "en" ? "Reviews" : "Avis", href: `${homePath}#reviews` },
-    { id: "visit-us", label: t.navigation.contact, href: `${homePath}#visit-us` },
     { id: "catering", label: t.navigation.catering, href: `${homePath}#catering` },
     { id: "faq", label: "FAQ", href: `${homePath}#faq` },
+    { id: "visit-us", label: t.navigation.contact, href: `${homePath}#visit-us` },
   ];
   const alternate: Locale = locale === "en" ? "fr" : "en";
 
@@ -476,7 +476,6 @@ export default function SeafoodSite({ locale, page, category }: Props) {
               href={item.href}
               onClick={() => setMenuOpen(false)}
             >
-              <small>0{index + 1}</small>
               <span>{item.label}</span>
               <i>↘</i>
             </a>
@@ -560,8 +559,6 @@ function Home({ locale }: { locale: Locale }) {
 
       <TrustSection locale={locale} />
 
-      <VisitUsSection locale={locale} />
-
       <section id="catering" className="catering-feature">
         <img src="/sherbrooke/shellfish-platter.webp" alt={locale === "en" ? "A generous lobster and shellfish platter prepared by Poissonnerie Sherbrooke" : "Un généreux plateau de homard et fruits de mer préparé par la Poissonnerie Sherbrooke"} width="2991" height="1994" loading="lazy" />
         <div className="catering-panel liquid-panel reveal">
@@ -578,6 +575,8 @@ function Home({ locale }: { locale: Locale }) {
       </section>
 
       <FaqSection locale={locale} />
+
+      <VisitUsSection locale={locale} />
     </>
   );
 }
@@ -970,9 +969,9 @@ function Footer({ locale }: { locale: Locale }) {
           <small>{locale === "en" ? "Navigate" : "Navigation"}</small>
           <a href={`${routeMap[locale].home}#shop`}>{t.navigation.market}</a>
           <a href={`${routeMap[locale].home}#reviews`}>{locale === "en" ? "Reviews" : "Avis"}</a>
-          <a href={`${routeMap[locale].home}#visit-us`}>{t.navigation.contact}</a>
           <a href={`${routeMap[locale].home}#catering`}>{t.navigation.catering}</a>
           <a href={`${routeMap[locale].home}#faq`}>FAQ</a>
+          <a href={`${routeMap[locale].home}#visit-us`}>{t.navigation.contact}</a>
           <Link href={routeMap[locale].privacy}>{locale === "en" ? "Privacy" : "Confidentialité"}</Link>
         </div>
       </div>
