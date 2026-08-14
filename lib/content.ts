@@ -182,7 +182,7 @@ export const copy = {
   en: {
     localeName: "FR",
     navigation: { market: "The Market", menu: "Chef’s Menu", catering: "Catering", story: "Our Story", contact: "Visit Us", call: "Call to order", open: "Open menu", close: "Close menu" },
-    hero: { title: "Montréal’s fresh fish market since 1975.", body: "Hand-selected daily by our fishmongers. Trusted by Montréal families and top chefs for over 50 years.", primary: "Order online" },
+    hero: { title: "Montréal’s fresh fish market since 1968.", body: "Hand-selected daily by our fishmongers. Trusted by Montréal families and top chefs for over 50 years.", primary: "Order online" },
     trust: ["Fresh daily", "Fully traceable", "Expert fishmongers", "Fast delivery", "Sourced with care"],
     counter: { title: "Shop by category", body: "Our selection changes with every delivery.", order: "Order online", viewAll: "View all" },
     chef: { eyebrow: "Meet Chef Paul", title: "Four decades of experience, served fresh every day.", body: "With more than 40 years of experience in Montréal restaurants, Chef Paul brings restaurant-level craft to the neighbourhood fish market.", specialties: ["Chowders", "Bisques", "Tartares", "Paella", "Lobster rolls", "Fish and chips"] },
@@ -205,7 +205,7 @@ export const copy = {
   fr: {
     localeName: "EN",
     navigation: { market: "La poissonnerie", menu: "Menu du chef", catering: "Service traiteur", story: "Notre histoire", contact: "Nous visiter", call: "Commander par téléphone", open: "Ouvrir le menu", close: "Fermer le menu" },
-    hero: { title: ["Le marché de poissons frais", "de Montréal depuis 1975."], body: ["Sélectionné chaque jour à la main par nos poissonniers.", "La confiance des familles montréalaises et des grands chefs depuis plus de 50 ans."], primary: "Commander en ligne" },
+    hero: { title: ["Le marché de poissons frais", "de Montréal depuis 1968."], body: ["Sélectionné chaque jour à la main par nos poissonniers.", "La confiance des familles montréalaises et des grands chefs depuis plus de 50 ans."], primary: "Commander en ligne" },
     trust: ["Frais chaque jour", "Pleinement traçable", "Poissonniers d’expérience", "Livraison rapide", "Sélectionné avec soin"],
     counter: { title: "Magasiner par catégorie", body: "Notre sélection change à chaque arrivage.", order: "Commander en ligne", viewAll: "Tout voir" },
     chef: { eyebrow: "Rencontrez le chef Paul", title: "Quatre décennies d’expérience, servies fraîches chaque jour.", body: "Fort de plus de 40 ans dans les restaurants montréalais, le chef Paul apporte un savoir-faire de niveau restaurant à la poissonnerie de quartier.", specialties: ["Chaudrées", "Bisques", "Tartares", "Paella", "Guédilles au homard", "Fish and chips"] },

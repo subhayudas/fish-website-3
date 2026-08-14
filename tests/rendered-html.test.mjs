@@ -37,7 +37,7 @@ test("server-renders the localized homepage with optimized discovery hints", asy
 
   const html = await response.text();
   assert.match(html, /<html lang="en"/);
-  assert.match(html, /Montréal’s fresh fish market since 1975\./);
+  assert.match(html, /Montréal’s fresh fish market since 1968\./);
   assert.match(html, /hero-counter-768\.webp 768w/);
   assert.match(html, /hero-counter-1280\.webp 1280w/);
   assert.match(html, /fetchPriority="high"/);
