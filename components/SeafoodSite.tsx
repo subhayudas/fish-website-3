@@ -33,28 +33,37 @@ const archiveGallery = [
 
 function Arrow() { return <span className="cta-arrow" aria-hidden="true">↗</span>; }
 
-function IconMapPin() {
+function IconMapPin({ className = "visit-us-icon" }: { className?: string }) {
   return (
-    <svg className="visit-us-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
       <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" />
     </svg>
   );
 }
 
-function IconClock() {
+function IconClock({ className = "visit-us-icon" }: { className?: string }) {
   return (
-    <svg className="visit-us-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
       <path d="M12 7v5l3 3" />
     </svg>
   );
 }
 
-function IconPhone() {
+function IconPhone({ className = "visit-us-icon" }: { className?: string }) {
   return (
-    <svg className="visit-us-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+    </svg>
+  );
+}
+
+function IconMail({ className = "visit-us-icon" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" />
+      <path d="M3 7l9 6l9 -6" />
     </svg>
   );
 }
@@ -919,44 +928,84 @@ function InquiryForm({ locale, type }: { locale: Locale; type: "general" | "cate
 
 function Footer({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const en = locale === "en";
+  const home = routeMap[locale].home;
+  const hours = business.hours[locale].map((row) => {
+    const [days, time] = row.split(" · ");
+    return { row, days, time };
+  });
+  const [emailUser, emailDomain] = business.email.split("@");
+  const links = [
+    { href: `${home}#shop`, label: t.navigation.market },
+    { href: `${home}#reviews`, label: en ? "Reviews" : "Avis" },
+    { href: `${home}#catering`, label: t.navigation.catering },
+    { href: `${home}#faq`, label: "FAQ" },
+    { href: `${home}#visit-us`, label: t.navigation.contact },
+  ];
+
   return (
     <footer className="site-footer">
       <div className="footer-brand">
-        <Link href={routeMap[locale].home}><Brand /></Link>
+        <Link href={home} aria-label={business.name}><Brand /></Link>
+        <p className="footer-tagline">{t.visit.title}</p>
       </div>
+
       <div className="footer-grid">
-        <div>
-          <small>{locale === "en" ? "Visit" : "Visiter"}</small>
-          <p>{locale === "en" ? business.address : business.addressFr}</p>
-          <a href={business.maps} target="_blank" rel="noreferrer">{t.visit.directions} ↗</a>
-        </div>
-        <div>
-          <small>{locale === "en" ? "Contact" : "Coordonnées"}</small>
-          <a href={business.telephoneHref}>{business.telephone}</a>
-          <a href={`mailto:${business.email}`}>{business.email}</a>
-        </div>
-        <div>
-          <small>{locale === "en" ? "Hours" : "Heures"}</small>
-          {business.hours[locale].map((row) => <p key={row}>{row}</p>)}
-        </div>
-        <div>
-          <small>{locale === "en" ? "Navigate" : "Navigation"}</small>
-          <a href={`${routeMap[locale].home}#shop`}>{t.navigation.market}</a>
-          <a href={`${routeMap[locale].home}#reviews`}>{locale === "en" ? "Reviews" : "Avis"}</a>
-          <a href={`${routeMap[locale].home}#catering`}>{t.navigation.catering}</a>
-          <a href={`${routeMap[locale].home}#faq`}>FAQ</a>
-          <a href={`${routeMap[locale].home}#visit-us`}>{t.navigation.contact}</a>
-          <Link href={routeMap[locale].privacy}>{locale === "en" ? "Privacy" : "Confidentialité"}</Link>
-        </div>
+        <section className="footer-col">
+          <h2 className="footer-heading">{en ? "Visit" : "Visiter"}</h2>
+          <address className="footer-address">{en ? business.address : business.addressFr}</address>
+          <a className="footer-cta" href={business.maps} target="_blank" rel="noreferrer">
+            <IconMapPin className="footer-icon" />
+            <span>{t.visit.directions}</span>
+            <i aria-hidden="true">↗</i>
+          </a>
+        </section>
+
+        <section className="footer-col">
+          <h2 className="footer-heading">{en ? "Contact" : "Coordonnées"}</h2>
+          <a className="footer-row" href={business.telephoneHref}>
+            <IconPhone className="footer-icon" />
+            <span>{business.telephone}</span>
+          </a>
+          <a className="footer-row" href={`mailto:${business.email}`}>
+            <IconMail className="footer-icon" />
+            <span className="footer-email">
+              {emailDomain ? <>{emailUser}@<wbr />{emailDomain}</> : business.email}
+            </span>
+          </a>
+        </section>
+
+        <section className="footer-col footer-col-hours">
+          <h2 className="footer-heading">{en ? "Hours" : "Heures"}</h2>
+          <dl className="footer-hours">
+            {hours.map(({ row, days, time }) => (
+              <div className="footer-hours-row" key={row}>
+                <dt>{days}</dt>
+                {time ? <dd>{time}</dd> : null}
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <nav className="footer-col" aria-label={en ? "Footer navigation" : "Navigation du pied de page"}>
+          <h2 className="footer-heading">{en ? "Navigate" : "Navigation"}</h2>
+          <ul className="footer-nav">
+            {links.map((link) => (
+              <li key={link.href}><a href={link.href}>{link.label}</a></li>
+            ))}
+            <li><Link href={routeMap[locale].privacy}>{en ? "Privacy" : "Confidentialité"}</Link></li>
+          </ul>
+        </nav>
       </div>
+
       <div className="footer-bottom">
         <span>
           © {new Date().getFullYear()} Poissonnerie Sherbrooke
           <span aria-hidden="true"> · </span>
-          {locale === "en" ? "Site by" : "Site par"}{" "}
+          {en ? "Site by" : "Site par"}{" "}
           <a href="https://vantic.ca" target="_blank" rel="noopener noreferrer">Vantic</a>
         </span>
-        <span>{locale === "en" ? "Photography:" : "Photographie :"} {photographyCredits.join(", ")}</span>
+        <span>{en ? "Photography:" : "Photographie :"} {photographyCredits.join(", ")}</span>
       </div>
     </footer>
   );
